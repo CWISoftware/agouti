@@ -1,5 +1,2 @@
 require "guaipeca/version"
-
-module Guaipeca
-  # Your code goes here...
-end
+require "guaipeca/rack/package_limiter"

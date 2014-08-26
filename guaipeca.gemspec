@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Guaipeca::VERSION
   spec.authors       = ["dwayhs"]
   spec.email         = ["danielwayhs@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = 'Gem for testing above the fold render on the first tcp round trip.'
+  spec.description   = ''
   spec.homepage      = ""
   spec.license       = "MIT"
 
