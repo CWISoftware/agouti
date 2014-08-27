@@ -1,11 +1,11 @@
-module Guaipeca
+module Agouti
 
   module Rack
 
     class PackageLimiter
 
-      ENABLE_HEADER = 'X-Guaipeca-Enable'
-      LIMIT_HEADER = 'X-Guaipeca-Limit'
+      ENABLE_HEADER = 'X-Agouti-Enable'
+      LIMIT_HEADER = 'X-Agouti-Limit'
       DEFAULT_LIMIT = 14000
 
       ##
