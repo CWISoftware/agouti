@@ -24,7 +24,26 @@ Or install it yourself as:
 
 ## Usage
 
-To request the content of thew first round trip 
+To enable the middleware, it is necessary to add the following header to the request:
+```
+X-Agouti-Enable: 1
+```
+
+It is possible to customize the length of the content that the server will respond with the following header:
+```
+X-Agouti-Limit: 14000
+```
+
+### Example usage with Cucumber, Capybara and Poltergeist
+```
+Given /^(?:|I )navigate to '(.+)'$/ do |page_path|
+  visit page_path
+
+Given /^(?:|I )navigate to '(.+)' waiting only one tcp round trip$/ do |page_path|
+  page.driver.add_header("X-Agouti-Enable", "1", permanent: false)
+  visit page_path
+end
+```
 
 ## Contributing
 
