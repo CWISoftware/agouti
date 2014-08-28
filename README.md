@@ -1,4 +1,4 @@
-# Agouti [![Build Status](https://travis-ci.org/CWISoftware/agouti.png?branch=master)](https://travis-ci.org/CWISoftware/agouti) [![Code Climate](https://codeclimate.com/github/CWISoftware/agouti/badges/gpa.svg)](https://codeclimate.com/github/CWISoftware/agouti)
+# Agouti [![Build Status](https://travis-ci.org/CWISoftware/agouti.png?branch=master)](https://travis-ci.org/CWISoftware/agouti) [![Code Climate](https://codeclimate.com/github/CWISoftware/agouti/badges/gpa.svg)](https://codeclimate.com/github/CWISoftware/agouti) [![Gem Version](https://badge.fury.io/rb/agouti.svg)](http://badge.fury.io/rb/agouti)
 
 Gem for testing above the fold render on the first tcp round trip.
 
