@@ -1,3 +1,5 @@
+require 'rack'
+
 module Agouti
 
   module Rack
@@ -8,21 +10,11 @@ module Agouti
       LIMIT_HEADER = 'X-Agouti-Limit'
       DEFAULT_LIMIT = 14000
 
-      ##
       # Creates Agouti::Rack::PackageLimiter middleware.
       #
       # [app] rack app instance
-      # [options] hash of package limiter options, i.e.
-      #           'if' - a lambda enabling / disabling deflation based on returned boolean value
-      #                  e.g use Rack::Deflater, :if => lambda { |env, status, headers, body| body.length > 512 }
-      def initialize(app, options = {})
+      def initialize(app)
         @app = app
-        @condition = options[:if]
-        @limit = options[:limit] || 14000
-      end
-
-      def get_http_header env, header
-        env["HTTP_#{header.upcase.gsub('-', '_')}"]
       end
 
       def call(env)
@@ -51,6 +43,10 @@ module Agouti
       end
 
       private
+
+      def get_http_header env, header
+        env["HTTP_#{header.upcase.gsub('-', '_')}"]
+      end
 
       def enabled? env
         get_http_header(env, ENABLE_HEADER) and get_http_header(env, ENABLE_HEADER) == '1'
