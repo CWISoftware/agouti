@@ -1,4 +1,4 @@
-# Agouti
+# Agouti [![Build Status](https://travis-ci.org/CWISoftware/agouti.png?branch=master)](https://travis-ci.org/CWISoftware/agouti)
 
 Gem for testing above the fold render on the first tcp round trip.
 
