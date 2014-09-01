@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Agouti::Rack::PackageLimiter do
 
-  let(:app) { double('app', call: [status, headers, body]) }
-  let(:status) { 200 }
-  let(:body) { [] }
+  let(:app) { double('app', call: [200, headers, []]) }
 
   describe '#call' do
 
@@ -24,38 +22,32 @@ describe Agouti::Rack::PackageLimiter do
         end
 
         context 'when header X-Agouti-Limit is not set' do
-          let(:content_type_header) { { 'Content-Type' => 'text/html' } }
-
           it 'returns gzipped data truncated at 14000 bytes' do
-            headers.merge!(content_type_header)
+            headers.merge!('Content-Type' => 'text/html')
 
-            st, hd, bd = subject
+            response_status, response_headers, response_body = subject
 
-            expect(st).to eq(200)
-            expect(hd).to eq(headers.merge!('Content-Encoding' => 'gzip'))
-            expect(bd).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
-            expect(bd.byte_limit).to eq(14000)
+            expect(response_status).to eq(200)
+            expect(response_headers).to include(headers.merge!('Content-Encoding' => 'gzip'))
+            expect(response_body).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
+            expect(response_body.byte_limit).to eq(14000)
           end
         end
 
         context 'when header X-Agouti-Limit is set' do
+
           context 'when header X-Agouti-Limit is set with a valid number of bytes' do
-            let(:limit_header) { { 'X-Agouti-Limit' => 10 } }
-            let(:content_type_header) { { 'Content-Type' => 'text/html' } }
-            let(:limit_env) { { 'HTTP_X_AGOUTI_LIMIT' => 10 } }
 
             it 'returns gzipped data with given number of bytes' do
-              headers.merge!(limit_header)
-              headers.merge!(content_type_header)
-              env.merge!(limit_env)
+              headers.merge!('X-Agouti-Limit' => 10, 'Content-Type' => 'text/html')
+              env.merge!('HTTP_X_AGOUTI_LIMIT' => 10)
 
+              response_status, response_headers, response_body = subject
 
-              st, hd, bd = subject
-
-              expect(st).to eq(200)
-              expect(hd).to eq(headers.merge!('Content-Encoding' => 'gzip'))
-              expect(bd).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
-              expect(bd.byte_limit).to eq(10)
+              expect(response_status).to eq(200)
+              expect(response_headers).to include(headers.merge!('Content-Encoding' => 'gzip'))
+              expect(response_body).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
+              expect(response_body.byte_limit).to eq(10)
             end
           end
 
