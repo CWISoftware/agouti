@@ -16,8 +16,7 @@ module Agouti
       end
 
       def call(env)
-        raise InvalidHeaderException.new unless valid?(env, ENABLE_HEADER)
-        raise InvalidHeaderException.new unless valid?(env, LIMIT_HEADER)
+        raise InvalidHeaderException.new unless valid?(env, ENABLE_HEADER) && valid?(env, LIMIT_HEADER)
 
         status, headers, body = @app.call(env)
 
@@ -26,7 +25,7 @@ module Agouti
         if enabled?(env)
           # Just execute for html
           # TODO: find a better way of doing it
-          unless (headers.has_key? 'Content-Type' and headers['Content-Type'].include? 'text/html')
+          unless (headers.key? 'Content-Type' and headers['Content-Type'].include? 'text/html')
             # Returns empty responses for requests that are not html
             return [204, {}, []]
           end
@@ -35,7 +34,7 @@ module Agouti
 
           headers['Content-Encoding'] = 'gzip'
           headers.delete('Content-Length')
-          mtime = headers.key?("Last-Modified") ? Time.httpdate(headers["Last-Modified"]) : Time.now
+          mtime = headers.key?('Last-Modified') ? Time.httpdate(headers['Last-Modified']) : Time.now
 
           [status, headers, GzipTruncatedStream.new(body, mtime, @limit)]
         else
@@ -50,7 +49,6 @@ module Agouti
       end
 
       def enabled? env
-        #get_http_header(env, ENABLE_HEADER) and get_http_header(env, ENABLE_HEADER) == '1'
         get_http_header(env, ENABLE_HEADER) && get_http_header(env, ENABLE_HEADER) == 1
       end
 
@@ -61,7 +59,7 @@ module Agouti
       def valid? env, header
         case header
         when ENABLE_HEADER
-          get_http_header(env, ENABLE_HEADER) == 1 || get_http_header(env, ENABLE_HEADER) == 0 || get_http_header(env, ENABLE_HEADER).nil?
+          (0..1).include?(get_http_header(env, ENABLE_HEADER)) || get_http_header(env, ENABLE_HEADER).nil?
         when LIMIT_HEADER
           get_http_header(env, LIMIT_HEADER).class == Fixnum || get_http_header(env, LIMIT_HEADER).nil?
         end
