@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Agouti::Rack::PackageLimiter do
 
-  let(:app) { double('app', call: [200, headers, []]) }
+  let(:app) { ->(env) { [200, headers, []] } }
 
   describe '#call' do
 
