@@ -1,9 +1,7 @@
 require 'rack'
 
 module Agouti
-
   module Rack
-
     class PackageLimiter
 
       ENABLE_HEADER = 'X-Agouti-Enable'
@@ -18,6 +16,9 @@ module Agouti
       end
 
       def call(env)
+        raise InvalidHeaderException.new unless valid?(env, ENABLE_HEADER)
+        raise InvalidHeaderException.new unless valid?(env, LIMIT_HEADER)
+
         status, headers, body = @app.call(env)
 
         set_limit(env)
@@ -32,7 +33,7 @@ module Agouti
 
           headers = ::Rack::Utils::HeaderHash.new(headers)
 
-          headers['Content-Encoding'] = "gzip"
+          headers['Content-Encoding'] = 'gzip'
           headers.delete('Content-Length')
           mtime = headers.key?("Last-Modified") ? Time.httpdate(headers["Last-Modified"]) : Time.now
 
@@ -49,14 +50,26 @@ module Agouti
       end
 
       def enabled? env
-        get_http_header(env, ENABLE_HEADER) and get_http_header(env, ENABLE_HEADER) == '1'
+        #get_http_header(env, ENABLE_HEADER) and get_http_header(env, ENABLE_HEADER) == '1'
+        get_http_header(env, ENABLE_HEADER) && get_http_header(env, ENABLE_HEADER) == 1
       end
 
       def set_limit env
         @limit = (get_http_header(env, LIMIT_HEADER)) ?  get_http_header(env, LIMIT_HEADER).to_i : DEFAULT_LIMIT
       end
 
+      def valid? env, header
+        case header
+        when ENABLE_HEADER
+          get_http_header(env, ENABLE_HEADER) == 1 || get_http_header(env, ENABLE_HEADER) == 0 || get_http_header(env, ENABLE_HEADER).nil?
+        when LIMIT_HEADER
+          get_http_header(env, LIMIT_HEADER).class == Fixnum || get_http_header(env, LIMIT_HEADER).nil?
+        end
+      end
+
       class GzipTruncatedStream < ::Rack::Deflater::GzipStream
+        attr_reader :byte_limit
+
         def initialize body, mtime, byte_limit
           super body, mtime
           @byte_limit = byte_limit
@@ -73,6 +86,8 @@ module Agouti
           @writer.call(data)
         end
       end
+
+      class InvalidHeaderException < Exception; end;
     end
   end
 end
