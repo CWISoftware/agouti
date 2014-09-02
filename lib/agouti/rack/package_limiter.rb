@@ -2,10 +2,14 @@ require 'rack'
 
 module Agouti
   module Rack
+
+    # Public: rack middleware that truncates the gzipped response.
+    # Useful for testing critical rendering path optimization.
     class PackageLimiter
 
       ENABLE_HEADER = 'X-Agouti-Enable'
       LIMIT_HEADER = 'X-Agouti-Limit'
+      # Public: Default limit of bytes.
       DEFAULT_LIMIT = 14000
 
       # Public: Constructor.
@@ -29,7 +33,7 @@ module Agouti
       #
       # The response body is gzipped only when the following conditions are met:
       #   Header X-Agouti-Enable set with value 1 and header Content-Type with value 'text/html'.
-      #   If header X-Agouti-Limit is set, response body will be truncated with the given number of bytes.
+      #   If header X-Agouti-Limit is set, response body will be truncated to the given number of bytes.
       #   Otherwise, body will be truncated to the default limit, which is 14000 bytes.
       #
       # If header X-Agouti-Enable is enabled but header Content-Type does not have value 'text/html',
@@ -90,8 +94,8 @@ module Agouti
         valid_enable_header?(env) && valid_limit_header?(env)
       end
 
+      # Public: class responsible for truncating the gzip stream to a given number of bytes.
       class GzipTruncatedStream < ::Rack::Deflater::GzipStream
-
         # Public: Constructor.
         #
         # body - response body.
@@ -120,6 +124,7 @@ module Agouti
         end
       end
 
+      # Public: custom exception class for invalid headers.
       class InvalidHeaderException < Exception; end;
     end
   end
