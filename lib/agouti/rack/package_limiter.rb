@@ -8,13 +8,34 @@ module Agouti
       LIMIT_HEADER = 'X-Agouti-Limit'
       DEFAULT_LIMIT = 14000
 
-      # Creates Agouti::Rack::PackageLimiter middleware.
+      # Public: Constructor.
       #
-      # [app] rack app instance
+      # app - rack app instance
+      #
+      # Returns an instance of Agouti::Rack::PackageLimiter middleware.
       def initialize(app)
         @app = app
       end
 
+      # Public: Apply middleware to request.
+      #
+      # env - environment.
+      #
+      # Raises Agouti::Rack::PackageLimiter::InvalidHeaderException if headers are not valid. The following values are accepted:
+      #   X-Agouti-Enable:
+      #   - header not present or set with value 0(disabled).
+      #   - header set with value 1 (enabled).
+      #   X-Agouti-Limit: an integer.
+      #
+      # The response body is gzipped only when the following conditions are met:
+      #   Header X-Agouti-Enable set with value 1 and header Content-Type with value 'text/html'.
+      #   If header X-Agouti-Limit is set, response body will be truncated with the given number of bytes.
+      #   Otherwise, body will be truncated to the default limit, which is 14000 bytes.
+      #
+      # If header X-Agouti-Enable is enabled but header Content-Type does not have value 'text/html',
+      # the middleware will return a response with status code 204 and empty body.
+      #
+      # If header X-Agouti-Enable has value 0 or is empty, the response will not be modified.
       def call(env)
         raise InvalidHeaderException.new unless valid?(env, ENABLE_HEADER) && valid?(env, LIMIT_HEADER)
 
@@ -23,10 +44,7 @@ module Agouti
         set_limit(env)
 
         if enabled?(env)
-          # Just execute for html
-          # TODO: find a better way of doing it
-          unless (headers.key? 'Content-Type' and headers['Content-Type'].include? 'text/html')
-            # Returns empty responses for requests that are not html
+          unless headers['Content-Type'] == 'text/html'
             return [204, {}, []]
           end
 
@@ -53,7 +71,7 @@ module Agouti
       end
 
       def set_limit env
-        @limit = (get_http_header(env, LIMIT_HEADER)) ?  get_http_header(env, LIMIT_HEADER).to_i : DEFAULT_LIMIT
+        @limit = (get_http_header(env, LIMIT_HEADER)) ? get_http_header(env, LIMIT_HEADER).to_i : DEFAULT_LIMIT
       end
 
       def valid? env, header
@@ -61,21 +79,31 @@ module Agouti
         when ENABLE_HEADER
           (0..1).include?(get_http_header(env, ENABLE_HEADER)) || get_http_header(env, ENABLE_HEADER).nil?
         when LIMIT_HEADER
-          get_http_header(env, LIMIT_HEADER).class == Fixnum || get_http_header(env, LIMIT_HEADER).nil?
+          get_http_header(env, LIMIT_HEADER).kind_of?(Integer) || get_http_header(env, LIMIT_HEADER).nil?
         end
       end
 
       class GzipTruncatedStream < ::Rack::Deflater::GzipStream
-        attr_reader :byte_limit
 
+        # Public: Constructor.
+        #
+        # body - response body.
+        # mtime - last-modified time.
+        # byte_limit - byte limit.
+        #
+        # Returns an instance of Agouti::Rack::PackageLimiter::GzipTruncatedStream.
         def initialize body, mtime, byte_limit
           super body, mtime
           @byte_limit = byte_limit
           @total_sent_bytes = 0
         end
 
+        # Public: Writes data to stream.
+        #
+        # data - data.
+        #
+        # If total sent bytes reaches bytes limit, data is sliced.
         def write(data)
-          # slices data if total sent bytes reaches byte limit
           if @total_sent_bytes + data.bytesize > @byte_limit
             data = data.byteslice(0, @byte_limit - @total_sent_bytes)
           end

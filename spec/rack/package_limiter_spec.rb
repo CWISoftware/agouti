@@ -9,7 +9,6 @@ describe Agouti::Rack::PackageLimiter do
     subject { described_class.new(app).call(env) }
 
     context 'when header X-Agouti-Enable is set' do
-
       context 'when header X-Agouti-Enable is set with 1' do
 
         let(:headers) { { 'X-Agouti-Enable' => 1 } }
@@ -30,14 +29,12 @@ describe Agouti::Rack::PackageLimiter do
             expect(response_status).to eq(200)
             expect(response_headers).to include(headers.merge!('Content-Encoding' => 'gzip'))
             expect(response_body).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
-            expect(response_body.byte_limit).to eq(14000)
+            expect(response_body.instance_variable_get(:@byte_limit)).to eq(14000)
           end
         end
 
         context 'when header X-Agouti-Limit is set' do
-
           context 'when header X-Agouti-Limit is set with a valid number of bytes' do
-
             it 'returns gzipped data with given number of bytes' do
               headers.merge!('X-Agouti-Limit' => 10, 'Content-Type' => 'text/html')
               env.merge!('HTTP_X_AGOUTI_LIMIT' => 10)
@@ -47,7 +44,7 @@ describe Agouti::Rack::PackageLimiter do
               expect(response_status).to eq(200)
               expect(response_headers).to include(headers.merge!('Content-Encoding' => 'gzip'))
               expect(response_body).to be_a(Agouti::Rack::PackageLimiter::GzipTruncatedStream)
-              expect(response_body.byte_limit).to eq(10)
+              expect(response_body.instance_variable_get(:@byte_limit)).to eq(10)
             end
           end
 
