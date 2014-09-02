@@ -25,7 +25,7 @@ module Agouti
       #   X-Agouti-Enable:
       #   - header not present or set with value 0(disabled).
       #   - header set with value 1 (enabled).
-      #   X-Agouti-Limit: an integer.
+      #   X-Agouti-Limit: a positive integer.
       #
       # The response body is gzipped only when the following conditions are met:
       #   Header X-Agouti-Enable set with value 1 and header Content-Type with value 'text/html'.
@@ -74,12 +74,24 @@ module Agouti
         @limit = (get_http_header(env, LIMIT_HEADER)) ? get_http_header(env, LIMIT_HEADER).to_i : DEFAULT_LIMIT
       end
 
+      def valid_enable_header? env
+        header = get_http_header(env, ENABLE_HEADER)
+
+        (0..1).include?(header) || header.nil?
+      end
+
+      def valid_limit_header?(env)
+        header = get_http_header(env, LIMIT_HEADER)
+
+        (header.kind_of?(Integer) && header > 0) || header.nil?
+      end
+
       def valid? env, header
         case header
         when ENABLE_HEADER
-          (0..1).include?(get_http_header(env, ENABLE_HEADER)) || get_http_header(env, ENABLE_HEADER).nil?
+          valid_enable_header?(env)
         when LIMIT_HEADER
-          get_http_header(env, LIMIT_HEADER).kind_of?(Integer) || get_http_header(env, LIMIT_HEADER).nil?
+          valid_limit_header?(env)
         end
       end
 
