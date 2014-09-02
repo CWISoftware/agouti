@@ -4,7 +4,7 @@ Gem for testing above the fold render on the first tcp round trip.
 
 This gem is a Rack middleware that truncates the gzipped response to 14kb.
 
-Usefull for testing [critical rendering path optimization](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/).
+Useful for testing [critical rendering path optimization](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/).
 
 ## Installation
 

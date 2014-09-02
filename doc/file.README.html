@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.7.4
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!file.README.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'>
+<h1 id="label-Agouti+%7BBuild+Status%7D%5Bhttps%3A%2F%2Ftravis-ci.org%2FCWISoftware%2Fagouti%5D+%7BCode+Climate%7D%5Bhttps%3A%2F%2Fcodeclimate.com%2Fgithub%2FCWISoftware%2Fagouti%5D+%7BGem+Version%7D%5Bhttp%3A%2F%2Fbadge.fury.io%2Frb%2Fagouti%5D">Agouti <a href="https://travis-ci.org/CWISoftware/agouti.png?branch=master">{Build Status</a>] <a href="https://codeclimate.com/github/CWISoftware/agouti/badges/gpa.svg">{Code Climate</a>] <a href="https://badge.fury.io/rb/agouti.svg">{Gem Version</a>]</h1>
+
+<p>Gem for testing above the fold render on the first tcp round trip.</p>
+
+<p>This gem is a Rack middleware that truncates the gzipped response to 14kb.</p>
+
+<p>Useful for testing <a
+href="https://developers.google.com/web/fundamentals/performance/critical-rendering-path/">critical
+rendering path optimization</a>.</p>
+
+<h2 id="label-Installation">Installation</h2>
+
+<p>Add this line to your application&#39;s Gemfile:</p>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-string">&#39;agouti&#39;</span>
+</pre>
+
+<p>And then execute:</p>
+
+<pre class="code ruby"><code class="ruby">$ bundle</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre class="code ruby"><code class="ruby">$ gem install agouti</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>To enable the middleware, it is necessary to add the following header to
+the request:
+&lt;code&gt;
+X-Agouti-Enable: 1
+&lt;/code&gt;</p>
+
+<p>It is possible to customize the length of the content that the server will
+respond with the following header:
+&lt;code&gt;
+X-Agouti-Limit:
+14000
+&lt;/code&gt;</p>
+
+<h3 id="label-Example+usage+with+Cucumber%2C+Capybara+and+Poltergeist">Example usage with Cucumber, Capybara and Poltergeist</h3>
+
+<pre class="ruby"><span class="ruby-constant">Given</span> <span class="ruby-regexp">/^(?:|I )navigate to &#39;(.+)&#39;$/</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">page_path</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">visit</span> <span class="ruby-identifier">page_path</span>
+
+<span class="ruby-constant">Given</span> <span class="ruby-regexp">/^(?:|I )navigate to &#39;(.+)&#39; waiting only one tcp round trip$/</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">page_path</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">page</span>.<span class="ruby-identifier">driver</span>.<span class="ruby-identifier">add_header</span>(<span class="ruby-string">&quot;X-Agouti-Enable&quot;</span>, <span class="ruby-string">&quot;1&quot;</span>, <span class="ruby-identifier">permanent</span><span class="ruby-operator">:</span> <span class="ruby-keyword">false</span>)
+  <span class="ruby-identifier">visit</span> <span class="ruby-identifier">page_path</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h2 id="label-Contributing">Contributing</h2>
+<ol><li>
+<p>Fork it ( <a
+href="https://github.com/CWISoftware/agouti/fork">github.com/CWISoftware/agouti/fork</a>
+)</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Add some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create a new Pull Request</p>
+</li></ol>
+</div></div>
+
+    <div id="footer">
+  Generated on Tue Sep  2 15:27:49 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.4 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>
