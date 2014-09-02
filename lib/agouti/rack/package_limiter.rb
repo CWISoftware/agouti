@@ -37,7 +37,7 @@ module Agouti
       #
       # If header X-Agouti-Enable has value 0 or is empty, the response will not be modified.
       def call(env)
-        raise InvalidHeaderException.new unless valid?(env, ENABLE_HEADER) && valid?(env, LIMIT_HEADER)
+        raise InvalidHeaderException unless valid?(env)
 
         status, headers, body = @app.call(env)
 
@@ -80,19 +80,14 @@ module Agouti
         (0..1).include?(header) || header.nil?
       end
 
-      def valid_limit_header?(env)
+      def valid_limit_header? env
         header = get_http_header(env, LIMIT_HEADER)
 
         (header.kind_of?(Integer) && header > 0) || header.nil?
       end
 
-      def valid? env, header
-        case header
-        when ENABLE_HEADER
-          valid_enable_header?(env)
-        when LIMIT_HEADER
-          valid_limit_header?(env)
-        end
+      def valid? env
+        valid_enable_header?(env) && valid_limit_header?(env)
       end
 
       class GzipTruncatedStream < ::Rack::Deflater::GzipStream
