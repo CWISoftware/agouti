@@ -9,8 +9,8 @@ describe Agouti::Rack::PackageLimiter do
     subject { described_class.new(app).call(env) }
 
     context 'when header X-Agouti-Enable is set' do
-      context 'when header X-Agouti-Enable is set with 1' do
 
+      context 'when header X-Agouti-Enable is set with 1' do
         let(:headers) { { 'X-Agouti-Enable' => 1 } }
         let(:env) { { 'HTTP_X_AGOUTI_ENABLE' => 1 } }
 
@@ -34,6 +34,7 @@ describe Agouti::Rack::PackageLimiter do
         end
 
         context 'when header X-Agouti-Limit is set' do
+
           context 'when header X-Agouti-Limit is set with a valid number of bytes' do
             it 'returns gzipped data with given number of bytes' do
               headers.merge!('X-Agouti-Limit' => 10, 'Content-Type' => 'text/html')
