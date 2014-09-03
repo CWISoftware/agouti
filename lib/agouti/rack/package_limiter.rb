@@ -78,36 +78,27 @@ module Agouti
         @limit = (get_http_header(env, LIMIT_HEADER)) ? get_http_header(env, LIMIT_HEADER).to_i : DEFAULT_LIMIT
       end
 
-      def valid_enable_header? env
-        header = get_http_header(env, ENABLE_HEADER)
-
-        return true if header.nil?
-
-        if parseable?(header)
-          header.to_i >= 0
-        else
-          false
-        end
-      end
-
-      def valid_limit_header? env
-        header = get_http_header(env, LIMIT_HEADER)
-
-        return true if header.nil?
-
-        if parseable?(header)
-          header.to_i >= 0
-        else
-          false
-        end
-      end
-
       def valid? env
         valid_enable_header?(env) && valid_limit_header?(env)
       end
 
       def parseable?(header)
         (header =~ /^[0-9]+$/) == 0
+      end
+
+      # Defines two methods: valid_enable_header? and valid_limit_header?
+      ['enable', 'limit'].each do |action|
+        define_method("valid_#{action}_header?") do |env|
+          header = get_http_header(env, Object.const_get("#{self.class}::#{action.upcase}_HEADER"))
+
+          return true if header.nil?
+
+          if parseable?(header)
+            header.to_i >= 0
+          else
+            false
+          end
+        end
       end
 
       # Public: class responsible for truncating the gzip stream to a given number of bytes.
