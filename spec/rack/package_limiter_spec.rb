@@ -11,8 +11,8 @@ describe Agouti::Rack::PackageLimiter do
     context 'when header X-Agouti-Enable is set' do
 
       context 'when header X-Agouti-Enable is set with 1' do
-        let(:headers) { { 'X-Agouti-Enable' => 1 } }
-        let(:env) { { 'HTTP_X_AGOUTI_ENABLE' => 1 } }
+        let(:headers) { { 'X-Agouti-Enable' => '1' } }
+        let(:env) { { 'HTTP_X_AGOUTI_ENABLE' => '1' } }
 
         context 'when the request response is not an html' do
           it 'returns status code 204' do
@@ -37,8 +37,8 @@ describe Agouti::Rack::PackageLimiter do
 
           context 'when header X-Agouti-Limit is set with a valid number of bytes' do
             it 'returns gzipped data with given number of bytes' do
-              headers.merge!('X-Agouti-Limit' => 10, 'Content-Type' => 'text/html')
-              env.merge!('HTTP_X_AGOUTI_LIMIT' => 10)
+              headers.merge!('X-Agouti-Limit' => '10', 'Content-Type' => 'text/html')
+              env.merge!('HTTP_X_AGOUTI_LIMIT' => '10')
 
               response_status, response_headers, response_body = subject
 
@@ -61,8 +61,8 @@ describe Agouti::Rack::PackageLimiter do
       end
 
       context 'when header X-Agouti-Enable is set with 0' do
-        let(:headers) { { 'X-Agouti-Enable' => 0 } }
-        let(:env) { { 'HTTP_X_AGOUTI_ENABLE' => 0 } }
+        let(:headers) { { 'X-Agouti-Enable' => '0' } }
+        let(:env) { { 'HTTP_X_AGOUTI_ENABLE' => '0' } }
 
         it 'does nothing' do
           expect(subject). to match_array([200, headers, []])
