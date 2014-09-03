@@ -89,7 +89,7 @@ module Agouti
       # Defines two methods: valid_enable_header? and valid_limit_header?
       ['enable', 'limit'].each do |action|
         define_method("valid_#{action}_header?") do |env|
-          header = get_http_header(env, Object.const_get("#{self.class}::#{action.upcase}_HEADER"))
+          header = get_http_header(env, self.class.const_get("#{action.upcase}_HEADER"))
 
           return true if header.nil?
 
