@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    agouti (0.0.2)
+    agouti (0.0.3)
       rack (~> 1.5)
 
 GEM
